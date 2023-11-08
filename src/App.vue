@@ -24,6 +24,9 @@ onMounted(() => {})
 </script>
 
 <template>
+  <router-view></router-view>
+
+  <hr />
   <div>我是APP组件</div>
   <!-- 因为使用了element plus 所以components下的组件会自动注册-->
   <test-com></test-com>
