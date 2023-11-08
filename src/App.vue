@@ -2,6 +2,7 @@
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore, useCountStore } from '@/stores/index'
 import { storeToRefs } from 'pinia'
+import { onMounted } from 'vue'
 
 // 获取路由对象 router useRouter
 // 获取路由参数 route useRoute
@@ -18,6 +19,8 @@ const { setToken, removeToken } = userStore
 const useCount = useCountStore()
 const { count } = storeToRefs(useCount)
 const { increment } = useCount
+
+onMounted(() => {})
 </script>
 
 <template>
