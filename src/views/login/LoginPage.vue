@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { User, Lock } from '@element-plus/icons-vue'
+import { reqUserRegister } from '@/api/user.js'
 const isRegister = ref(true)
 const formModel = ref({
   username: '',
@@ -14,25 +15,23 @@ const formModel = ref({
 const rules = {
   username: [
     { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 3, max: 5, message: '长度在3-5个字符', trigger: 'blur' }
+    { min: 3, max: 10, message: '长度在3-10个字符', trigger: 'blur' }
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
     {
-      // 最少6位，包括至少1个大写字母，1个小写字母，1个数字，1个特殊字符
-      pattern:
-        /^\S*(?=\S{6,})(?=\S*\d)(?=\S*[A-Z])(?=\S*[a-z])(?=\S*[!@#$%^&*? ])\S*$/,
-      message: '包括至少1个大写字母，1个小写字母，1个数字，1个特殊字符',
+      // 最少6位，包括至少1个小写字母，1个数字
+      pattern: /^\S*(?=\S{6,})(?=\S*[a-z])\S*$/,
+      message: '最少6位,包括至少1个小写字母，1个数字',
       trigger: 'blur'
     }
   ],
   repassword: [
     { required: true, message: '请输入密码', trigger: 'blur' },
     {
-      // 最少6位，包括至少1个大写字母，1个小写字母，1个数字，1个特殊字符
-      pattern:
-        /^\S*(?=\S{6,})(?=\S*\d)(?=\S*[A-Z])(?=\S*[a-z])(?=\S*[!@#$%^&*? ])\S*$/,
-      message: '包括至少1个大写字母，1个小写字母，1个数字，1个特殊字符',
+      // 最少6位，包括至少1个小写字母，1个数字
+      pattern: /^\S*(?=\S{6,})(?=\S*[a-z])\S*$/,
+      message: '最少6位,包括至少1个小写字母，1个数字',
       trigger: 'blur'
     },
     {
@@ -49,8 +48,15 @@ const rules = {
 }
 const form = ref()
 // 注册校验,拿到表单中的validate
-const register = () => {
-  form.value.validate()
+const register = async () => {
+  await form.value.validate()
+  let res = await reqUserRegister(formModel.value)
+  if (res.data.code == 0) {
+    ElMessage({ type: 'success', message: '注册成功' })
+    isRegister.value = false
+  } else {
+    ElMessage({ type: 'error', message: res.data.message })
+  }
 }
 </script>
 
