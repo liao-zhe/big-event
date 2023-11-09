@@ -1,7 +1,10 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { User, Lock } from '@element-plus/icons-vue'
-import { reqUserRegister } from '@/api/user.js'
+import { reqUserRegister, reqUserLogin } from '@/api/user.js'
+import { useUserStore } from '@/stores/index'
+const router = useRouter()
 const isRegister = ref(true)
 const formModel = ref({
   username: '',
@@ -58,6 +61,34 @@ const register = async () => {
     ElMessage({ type: 'error', message: res.data.message })
   }
 }
+
+// 登录校验
+const login = async () => {
+  await form.value.validate()
+  let res = await reqUserLogin(formModel.value)
+  if (res.data.code == 0) {
+    // 存储token
+    useUserStore().setToken(res.data.token)
+    ElMessage({ type: 'success', message: res.data.message })
+    router.push('/')
+  } else {
+    ElMessage({ type: 'error', message: res.data.message })
+  }
+}
+
+// 切换时刷新数据
+watch(isRegister, () => {
+  isRegister.value === true
+    ? (formModel.value = {
+        username: '',
+        password: '',
+        repassword: ''
+      })
+    : (formModel.value = {
+        username: '',
+        password: ''
+      })
+})
 </script>
 
 <template>
@@ -117,15 +148,27 @@ const register = async () => {
         </el-form-item>
       </el-form>
       <!-- 登录 -->
-      <el-form ref="form" size="large" autocomplete="off" v-else>
+      <el-form
+        ref="form"
+        size="large"
+        autocomplete="off"
+        :model="formModel"
+        :rules="rules"
+        v-else
+      >
         <el-form-item>
           <h1>登录</h1>
         </el-form-item>
-        <el-form-item>
-          <el-input :prefix-icon="User" placeholder="请输入用户名"></el-input>
-        </el-form-item>
-        <el-form-item>
+        <el-form-item prop="username">
           <el-input
+            v-model="formModel.username"
+            :prefix-icon="User"
+            placeholder="请输入用户名"
+          ></el-input>
+        </el-form-item>
+        <el-form-item prop="password">
+          <el-input
+            v-model="formModel.password"
             name="password"
             :prefix-icon="Lock"
             type="password"
@@ -139,7 +182,11 @@ const register = async () => {
           </div>
         </el-form-item>
         <el-form-item>
-          <el-button class="button" type="primary" auto-insert-space
+          <el-button
+            class="button"
+            type="primary"
+            auto-insert-space
+            @click="login"
             >登录</el-button
           >
         </el-form-item>
