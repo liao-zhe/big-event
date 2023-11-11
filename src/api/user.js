@@ -19,4 +19,4 @@ export const reqUserLogin = ({ username, password }) => {
 }
 
 // 获取用户信息
-export const reqUserInfo = () => request.get('/my/userinfo')
+export const userGetInfoService = () => request.get('/my/userinfo')

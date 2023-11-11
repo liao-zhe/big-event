@@ -9,7 +9,28 @@ import {
   SwitchButton,
   CaretBottom
 } from '@element-plus/icons-vue'
-import avatar from '@/assets/default.png'
+import { onMounted } from 'vue'
+import { useUserStore } from '@/stores'
+import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
+const router = useRouter()
+const userStore = useUserStore()
+const { getUser, setUser, removeToken } = userStore
+const { user } = storeToRefs(userStore)
+// 下拉菜单回调
+const handleCommand = command => {
+  if (command == 'logout') {
+    removeToken()
+    setUser({})
+    router.push('/login')
+  } else {
+    router.push(`/user/${command}`)
+  }
+}
+// 获取用户信息
+onMounted(() => {
+  getUser()
+})
 </script>
 <template>
   <el-container>
@@ -61,11 +82,13 @@ import avatar from '@/assets/default.png'
     </el-aside>
     <el-container>
       <el-header>
-        <div>corder：<strong>lz</strong></div>
+        <div>
+          cordeby：<strong>{{ user.nickname || user.username }}</strong>
+        </div>
         <!-- 右侧下拉菜单 -->
-        <el-dropdown placement="bottom-end">
+        <el-dropdown placement="bottom-end" @command="handleCommand">
           <span class="el-dropdown__box">
-            <el-avatar :src="avatar" />
+            <el-avatar :src="user.user_pic" />
             <el-icon><CaretBottom /></el-icon>
           </span>
           <!-- 具名插槽 #dropdown是v-slot:dropdown的简写-->

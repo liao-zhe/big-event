@@ -3,9 +3,9 @@ import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { User, Lock } from '@element-plus/icons-vue'
 import { reqUserRegister, reqUserLogin } from '@/api/user.js'
-import { useUserStore } from '@/stores/index'
+import { useUserStore } from '@/stores'
 const router = useRouter()
-const isRegister = ref(true)
+const isRegister = ref(false)
 const formModel = ref({
   username: '',
   password: '',
@@ -18,7 +18,7 @@ const formModel = ref({
 const rules = {
   username: [
     { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 3, max: 10, message: '长度在3-10个字符', trigger: 'blur' }
+    { min: 2, max: 10, message: '长度在2-10个字符', trigger: 'blur' }
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
@@ -63,12 +63,13 @@ const register = async () => {
 }
 
 // 登录校验
+const userStore = useUserStore()
 const login = async () => {
   await form.value.validate()
   let res = await reqUserLogin(formModel.value)
   if (res.data.code == 0) {
     // 存储token
-    useUserStore().setToken(res.data.token)
+    userStore.setToken(res.data.token)
     ElMessage({ type: 'success', message: res.data.message })
     router.push('/')
   } else {

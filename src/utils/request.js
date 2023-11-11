@@ -12,7 +12,7 @@ const instance = axios.create({
 })
 
 // 添加请求拦截器
-axios.interceptors.request.use(
+instance.interceptors.request.use(
   config => {
     const userStore = useUserStore()
     // 携带token
@@ -27,7 +27,7 @@ axios.interceptors.request.use(
 )
 
 // 添加响应拦截器
-axios.interceptors.response.use(
+instance.interceptors.response.use(
   res => {
     // 响应核心数据
     if (res.data.code == 0) {
