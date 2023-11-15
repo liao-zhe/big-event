@@ -1,3 +1,4 @@
+<!-- 公共组件 -->
 <script setup>
 defineProps({
   title: {

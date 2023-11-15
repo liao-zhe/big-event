@@ -1,7 +1,9 @@
 <script setup>
 import { reqArticleInfo } from '@/api/article.js'
 import { ref } from 'vue'
+import DialogCom from './components/DialogCom.vue'
 import { Edit, Delete } from '@element-plus/icons-vue'
+
 const loading = ref(false)
 const channelList = ref([])
 const getChannelList = async () => {
@@ -17,12 +19,32 @@ const getChannelList = async () => {
 }
 
 getChannelList()
+
+//通过模板引入 拿到dialog-com组件
+const dialog = ref()
+
+// 添加分类
+const addChannel = () => {
+  dialog.value.open({})
+}
+// 编辑分类
+const editChannel = row => {
+  dialog.value.open(row)
+}
+// 删除分类
+const deleteChannel = () => {
+  dialog.value.open()
+}
+
+const onSuccess = () => {
+  getChannelList()
+}
 </script>
 
 <template>
   <page-content title="文章分类">
     <template #extra>
-      <el-button type="primary">文章分类</el-button>
+      <el-button type="primary" @click="addChannel">添加分类</el-button>
     </template>
     <el-table :data="channelList" style="width: 100%" v-loading="loading">
       <el-table-column type="index" label="序号" width="80px">
@@ -36,9 +58,15 @@ getChannelList()
             circle
             plain
             :icon="Edit"
-            @click="clickFn(row, $index)"
+            @click="editChannel(row, $index)"
           ></el-button>
-          <el-button type="danger" :icon="Delete" circle plain></el-button>
+          <el-button
+            type="danger"
+            :icon="Delete"
+            circle
+            plain
+            @click="deleteChannel(row, $index)"
+          ></el-button>
         </template>
       </el-table-column>
       <!-- table插槽还支持empty -->
@@ -46,5 +74,7 @@ getChannelList()
         <el-empty description="没有数据"></el-empty>
       </template>
     </el-table>
+    <!-- 弹出框 -->
+    <DialogCom ref="dialog" @success="onSuccess"></DialogCom>
   </page-content>
 </template>
