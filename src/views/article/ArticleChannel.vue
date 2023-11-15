@@ -3,7 +3,8 @@ import { reqArticleInfo } from '@/api/article.js'
 import { ref } from 'vue'
 import DialogCom from './components/DialogCom.vue'
 import { Edit, Delete } from '@element-plus/icons-vue'
-
+import { reqDeleteArticleInfo } from '@/api/article.js'
+import { ElMessage } from 'element-plus'
 const loading = ref(false)
 const channelList = ref([])
 const getChannelList = async () => {
@@ -32,8 +33,22 @@ const editChannel = row => {
   dialog.value.open(row)
 }
 // 删除分类
-const deleteChannel = () => {
-  dialog.value.open()
+const deleteChannel = async row => {
+  try {
+    await ElMessageBox.confirm('你确定要删除吗？', '温馨提示', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+    await reqDeleteArticleInfo(row.id)
+    ElMessage.success('删除成功')
+    getChannelList()
+  } catch (error) {
+    ElMessage({
+      type: 'info',
+      message: '取消删除'
+    })
+  }
 }
 
 const onSuccess = () => {
