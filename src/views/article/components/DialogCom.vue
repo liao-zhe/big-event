@@ -57,7 +57,10 @@ const cancel = () => {
   formRef.value.resetFields()
 }
 const emit = defineEmits(['success', 'cancle'])
-
+const handlerClose = () => {
+  dialogVisible.value = false
+  formRef.value.clearValidate()
+}
 // 往外暴露方法
 defineExpose({
   open
@@ -70,6 +73,7 @@ defineExpose({
     :title="formModel.id ? '编辑分类' : '添加分类'"
     width="30%"
     align-center
+    :before-close="handlerClose"
   >
     <el-form
       ref="formRef"
